@@ -1,0 +1,14 @@
+services:
+  uso:
+    build: .
+    ports:
+      - "8501:8501"
+    volumes:
+      - uso-data:/app/data
+    environment:
+      - USO_MASTER_KEY=${USO_MASTER_KEY}
+      - USO_DB_PATH=data/uso.db
+    restart: unless-stopped
+
+volumes:
+  uso-data:
