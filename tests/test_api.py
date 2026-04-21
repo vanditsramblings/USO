@@ -53,6 +53,7 @@ def test_create_script(client):
 
 
 def test_list_scripts(client):
+    before = len(client.get("/api/scripts").json())
     client.post(
         "/api/scripts",
         json={"name": "a", "runtime": "sh", "content": "echo a"},
@@ -63,7 +64,7 @@ def test_list_scripts(client):
     )
     resp = client.get("/api/scripts")
     assert resp.status_code == 200
-    assert len(resp.json()) == 2
+    assert len(resp.json()) == before + 2
 
 
 def test_get_script(client):

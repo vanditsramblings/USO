@@ -15,9 +15,19 @@ venv: ## Create virtual environment
 install: venv ## Install dependencies
 	$(BIN)/pip install -e ".[dev]"
 
-dev: install ## Install, copy .env if needed, run app
+dev: install ## Install deps and start (backend + frontend build)
 	@test -f .env || cp .env.example .env
-	$(BIN)/streamlit run app.py
+	./start.sh
+
+dev-api: install ## Run backend API server only (hot reload)
+	@test -f .env || cp .env.example .env
+	$(BIN)/uvicorn uso.api.app:create_app --factory --reload --port 8000
+
+dev-ui: ## Run SvelteKit dev server
+	cd frontend && npm run dev
+
+dev-full: install ## Run backend and frontend dev servers concurrently
+	./start.sh --dev
 
 test: ## Run tests
 	$(BIN)/python -m pytest tests/ -q --tb=short

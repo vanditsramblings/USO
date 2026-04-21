@@ -59,6 +59,78 @@ CREATE TABLE IF NOT EXISTS schedules (
     created_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY (script_id) REFERENCES scripts(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS tags (
+    id TEXT PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS script_tags (
+    script_id TEXT NOT NULL,
+    tag_id TEXT NOT NULL,
+    PRIMARY KEY (script_id, tag_id),
+    FOREIGN KEY (script_id) REFERENCES scripts(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS edges (
+    id TEXT PRIMARY KEY,
+    source_id TEXT NOT NULL,
+    target_id TEXT NOT NULL,
+    relation TEXT NOT NULL CHECK (relation IN ('data_flow','shared_env','manual','sequential')),
+    metadata TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    FOREIGN KEY (source_id) REFERENCES scripts(id) ON DELETE CASCADE,
+    FOREIGN KEY (target_id) REFERENCES scripts(id) ON DELETE CASCADE,
+    UNIQUE(source_id, target_id, relation)
+);
+CREATE TABLE IF NOT EXISTS workflows (
+    id TEXT PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    description TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS workflow_nodes (
+    id TEXT PRIMARY KEY,
+    workflow_id TEXT NOT NULL,
+    script_id TEXT NOT NULL,
+    position_x REAL DEFAULT 0,
+    position_y REAL DEFAULT 0,
+    config TEXT,
+    FOREIGN KEY (workflow_id) REFERENCES workflows(id) ON DELETE CASCADE,
+    FOREIGN KEY (script_id) REFERENCES scripts(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS workflow_edges (
+    id TEXT PRIMARY KEY,
+    workflow_id TEXT NOT NULL,
+    source_node_id TEXT NOT NULL,
+    target_node_id TEXT NOT NULL,
+    condition TEXT,
+    FOREIGN KEY (workflow_id) REFERENCES workflows(id) ON DELETE CASCADE,
+    FOREIGN KEY (source_node_id) REFERENCES workflow_nodes(id) ON DELETE CASCADE,
+    FOREIGN KEY (target_node_id) REFERENCES workflow_nodes(id) ON DELETE CASCADE,
+    UNIQUE(source_node_id, target_node_id)
+);
+CREATE TABLE IF NOT EXISTS workflow_runs (
+    id TEXT PRIMARY KEY,
+    workflow_id TEXT NOT NULL,
+    status TEXT DEFAULT 'pending'
+        CHECK (status IN ('pending','running','success','failure')),
+    started_at TEXT DEFAULT (datetime('now')),
+    finished_at TEXT,
+    FOREIGN KEY (workflow_id) REFERENCES workflows(id) ON DELETE CASCADE
+);
+CREATE TABLE IF NOT EXISTS workflow_node_runs (
+    id TEXT PRIMARY KEY,
+    workflow_run_id TEXT NOT NULL,
+    node_id TEXT NOT NULL,
+    run_id TEXT,
+    status TEXT DEFAULT 'pending'
+        CHECK (status IN ('pending','running','success','failure','skipped')),
+    execution_order INTEGER NOT NULL,
+    FOREIGN KEY (workflow_run_id) REFERENCES workflow_runs(id) ON DELETE CASCADE,
+    FOREIGN KEY (node_id) REFERENCES workflow_nodes(id) ON DELETE CASCADE,
+    FOREIGN KEY (run_id) REFERENCES runs(id) ON DELETE SET NULL
+);
 """
 
 

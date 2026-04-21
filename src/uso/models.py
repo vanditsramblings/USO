@@ -28,6 +28,7 @@ class ScriptCreate(BaseModel):
     content: str = Field(..., min_length=1)
     description: str = ""
     parameters: list["ParameterCreate"] = []
+    tags: list[str] = []
 
 
 class ScriptUpdate(BaseModel):
@@ -127,3 +128,143 @@ class ScheduleOut(BaseModel):
     misfire_grace_time: int
     next_run_time: str | None = None
     created_at: str
+
+
+# --- Tag ---
+
+
+class TagCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=50, pattern=r"^[a-zA-Z0-9_-]+$")
+
+
+class TagOut(BaseModel):
+    id: str
+    name: str
+    created_at: str
+
+
+# --- Edge (Knowledge Graph) ---
+
+
+class EdgeRelation(StrEnum):
+    data_flow = "data_flow"
+    shared_env = "shared_env"
+    manual = "manual"
+    sequential = "sequential"
+
+
+class EdgeCreate(BaseModel):
+    source_id: str
+    target_id: str
+    relation: EdgeRelation
+    metadata: dict | None = None
+
+
+class EdgeOut(BaseModel):
+    id: str
+    source_id: str
+    target_id: str
+    relation: EdgeRelation
+    metadata: dict | None
+    created_at: str
+
+
+# --- Workflow (DAG) ---
+
+
+class WorkflowNodeCreate(BaseModel):
+    script_id: str
+    position_x: float = 0
+    position_y: float = 0
+    config: dict | None = None
+
+
+class WorkflowEdgeCreate(BaseModel):
+    source_node_id: str
+    target_node_id: str
+    condition: dict | None = None
+
+
+class WorkflowCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100, pattern=r"^[a-zA-Z0-9_-]+$")
+    description: str = ""
+    nodes: list[WorkflowNodeCreate] = []
+    edges: list[WorkflowEdgeCreate] = []
+
+
+class WorkflowNodeOut(BaseModel):
+    id: str
+    workflow_id: str
+    script_id: str
+    position_x: float
+    position_y: float
+    config: dict | None
+
+
+class WorkflowEdgeOut(BaseModel):
+    id: str
+    workflow_id: str
+    source_node_id: str
+    target_node_id: str
+    condition: dict | None
+
+
+class WorkflowOut(BaseModel):
+    id: str
+    name: str
+    description: str | None
+    nodes: list[WorkflowNodeOut] = []
+    edges: list[WorkflowEdgeOut] = []
+    created_at: str
+    updated_at: str
+
+
+# --- Workflow Runs ---
+
+
+class WorkflowRunStatus(StrEnum):
+    pending = "pending"
+    running = "running"
+    success = "success"
+    failure = "failure"
+
+
+class NodeRunStatus(StrEnum):
+    pending = "pending"
+    running = "running"
+    success = "success"
+    failure = "failure"
+    skipped = "skipped"
+
+
+class WorkflowNodeRunOut(BaseModel):
+    id: str
+    workflow_run_id: str
+    node_id: str
+    run_id: str | None
+    status: NodeRunStatus
+    execution_order: int
+
+
+class WorkflowRunOut(BaseModel):
+    id: str
+    workflow_id: str
+    status: WorkflowRunStatus
+    started_at: str | None
+    finished_at: str | None
+    node_runs: list[WorkflowNodeRunOut] = []
+
+
+# --- Auto-Detection ---
+
+
+class DetectedParam(BaseModel):
+    key: str
+    is_secret: bool = False
+    source: str  # 'argparse', 'environ', 'shell_var'
+
+
+class DetectionResult(BaseModel):
+    description: str
+    parameters: list[DetectedParam] = []
+    tags: list[str] = []

@@ -1,0 +1,65 @@
+@import 'tailwindcss';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/700.css';
+
+@theme {
+  --color-bg: #18181b;
+  --color-bg-elevated: #1f1f23;
+  --color-bg-surface: #27272a;
+  --color-bg-hover: #2d2d31;
+  --color-border: #3f3f46;
+  --color-border-subtle: #2d2d31;
+  --color-text: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-text-dim: #71717a;
+  --color-accent: #34d399;
+  --color-accent-hover: #6ee7b7;
+  --color-accent-dim: #065f46;
+  --color-indigo: #818cf8;
+  --color-indigo-hover: #a5b4fc;
+  --color-danger: #f87171;
+  --color-warning: #fbbf24;
+  --color-success: #34d399;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+::selection {
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+}
+
+code, pre, .font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Splitpanes splitter styling */
+:global(.splitpanes__splitter) {
+  background: var(--color-border-subtle) !important;
+  position: relative;
+}
+:global(.splitpanes__splitter:hover) {
+  background: var(--color-accent-dim) !important;
+}
+:global(.splitpanes--horizontal > .splitpanes__splitter) {
+  min-height: 3px;
+}
+:global(.splitpanes--vertical > .splitpanes__splitter) {
+  min-width: 3px;
+}

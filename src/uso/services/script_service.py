@@ -2,10 +2,11 @@
 
 from uso import db
 from uso.models import ParameterCreate, ParameterOut, ScriptCreate, ScriptOut, ScriptUpdate
+from uso.services import tag_service
 
 
 def register_script(data: ScriptCreate) -> ScriptOut:
-    """Register a new script with parameters."""
+    """Register a new script with parameters and optional tags."""
     script_id = db.create_script(
         name=data.name,
         runtime=data.runtime.value,
@@ -14,6 +15,9 @@ def register_script(data: ScriptCreate) -> ScriptOut:
     )
     for p in data.parameters:
         db.add_parameter(script_id, p.key, is_secret=p.is_secret)
+    for tag_name in data.tags:
+        tag = tag_service.get_or_create_tag(tag_name)
+        tag_service.tag_script(script_id, tag.id)
     return get_script(script_id)
 
 
