@@ -179,15 +179,15 @@
 	</div>
 
 	{#if error}
-		<div class="rounded border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-400">{error}</div>
+		<div class="rounded border border-red-500/30 bg-red-500/10 p-3 text-sm text-cs-error">{error}</div>
 	{/if}
 
 	{#if !cfg}
-		<div class="text-sm text-text-muted">Loading configuration…</div>
+		<div class="text-sm text-cs-text-muted">Loading configuration…</div>
 	{:else}
 		{#each SECTIONS as section}
-			<section class="rounded-lg border border-border bg-bg-elevated">
-				<div class="flex items-center gap-2 border-b border-border px-4 py-3">
+			<section class="rounded-lg border border-cs-border bg-cs-surface">
+				<div class="flex items-center gap-2 border-b border-cs-border px-4 py-3">
 					<span>{section.icon}</span>
 					<h2 class="text-sm font-semibold">{section.label}</h2>
 				</div>
@@ -197,7 +197,7 @@
 							<div>
 								<div class="text-sm font-medium">{field.label}</div>
 								{#if field.hint}
-									<div class="text-xs text-text-muted">{field.hint}</div>
+									<div class="text-xs text-cs-text-muted">{field.hint}</div>
 								{/if}
 							</div>
 							<div class="min-w-[200px]">
@@ -210,7 +210,7 @@
 												setField(section.id, field.key, (e.target as HTMLInputElement).checked)}
 											class="h-4 w-4 rounded accent-accent"
 										/>
-										<span class="text-xs text-text-muted">{boolVal(section.id, field.key) ? 'Enabled' : 'Disabled'}</span>
+										<span class="text-xs text-cs-text-muted">{boolVal(section.id, field.key) ? 'Enabled' : 'Disabled'}</span>
 									</label>
 								{:else if field.type === 'select'}
 									<select

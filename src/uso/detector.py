@@ -170,6 +170,40 @@ _DETECTORS = {
     "js": _detect_javascript,
 }
 
+# Header comment pattern — matches `# key: value` in the first 20 lines
+_HEADER_META_RE = re.compile(r'^#\s*(\w+):\s*(.+)$')
+
+
+def extract_header_meta(content: str) -> dict:
+    """Parse script header comments for UI hints.
+
+    Supported fields (first 20 lines only, no code execution):
+        # icon: 💾
+        # depends_on: init_env.py, setup.sh
+        # tags: database, backup
+
+    Returns a dict with keys: icon, depends_on, tags.
+    """
+    icon: str | None = None
+    depends_on: list[str] = []
+    tags: list[str] = []
+
+    for line in content.splitlines()[:20]:
+        m = _HEADER_META_RE.match(line.strip())
+        if not m:
+            continue
+        key, value = m.group(1).lower(), m.group(2).strip()
+        if key == 'icon':
+            # Accept only emoji / short safe strings (no HTML)
+            safe = re.sub(r'[<>&"\'\\]', '', value)[:8]
+            icon = safe or None
+        elif key == 'depends_on':
+            depends_on = [s.strip() for s in value.split(',') if s.strip()]
+        elif key == 'tags':
+            tags = [s.strip() for s in value.split(',') if s.strip()]
+
+    return {'icon': icon, 'depends_on': depends_on, 'tags': tags}
+
 
 def detect(content: str, runtime: str) -> DetectionResult:
     """Inspect script content and return detected parameters, description, and tags."""

@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, HTTPException
 
+from uso.detector import extract_header_meta
 from uso.models import ParameterCreate, ParameterOut, ScriptCreate, ScriptOut, ScriptUpdate
 from uso.services import script_service
 
@@ -41,6 +42,15 @@ def update_script(script_id: str, data: ScriptUpdate):
 def delete_script(script_id: str):
     if not script_service.delete_script(script_id):
         raise HTTPException(status_code=404, detail="Script not found")
+
+
+@router.get("/{script_id}/meta")
+def get_script_meta(script_id: str):
+    """Return header-parsed metadata: icon, depends_on, tags."""
+    script = script_service.get_script(script_id)
+    if not script:
+        raise HTTPException(status_code=404, detail="Script not found")
+    return extract_header_meta(script.content)
 
 
 @router.post("/{script_id}/parameters", response_model=ParameterOut, status_code=201)

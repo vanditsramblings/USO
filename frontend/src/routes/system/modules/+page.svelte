@@ -68,13 +68,13 @@
 	</div>
 
 	<!-- Runtime tabs -->
-	<div class="flex gap-1 rounded-lg border border-border bg-bg-elevated p-1 w-fit">
+	<div class="flex gap-1 rounded-lg border border-cs-border bg-cs-surface p-1 w-fit">
 		{#each ['py', 'sh', 'js'] as rt}
 			<button
 				class="rounded px-4 py-1.5 text-sm font-medium transition-all"
-				class:bg-bg-hover={activeRuntime === rt}
+				class:bg-cs-surface-2={activeRuntime === rt}
 				class:text-accent={activeRuntime === rt}
-				class:text-text-muted={activeRuntime !== rt}
+				class:text-cs-text-muted={activeRuntime !== rt}
 				onclick={() => { activeRuntime = rt as 'py' | 'sh' | 'js'; categoryFilter = 'all'; }}
 			>
 				{runtimeLabel(rt)}
@@ -84,7 +84,7 @@
 
 	{#if data}
 		<!-- Runtime meta -->
-		<div class="rounded border border-border bg-bg-elevated px-4 py-2 text-xs text-text-muted">
+		<div class="rounded border border-cs-border bg-cs-surface px-4 py-2 text-xs text-cs-text-muted">
 			{#if activeRuntime === 'py'}
 				Python {data.python.version.split(' ')[0]} · {data.python.executable}
 			{:else if activeRuntime === 'sh'}
@@ -110,7 +110,7 @@
 			{/each}
 		</div>
 		{#if !loading}
-			<span class="text-xs text-text-muted">
+			<span class="text-xs text-cs-text-muted">
 				{available}/{filtered.length} available
 			</span>
 		{/if}
@@ -118,11 +118,11 @@
 
 	<!-- Table -->
 	{#if loading}
-		<div class="text-sm text-text-muted">Loading modules…</div>
+		<div class="text-sm text-cs-text-muted">Loading modules…</div>
 	{:else}
-		<div class="rounded-lg border border-border overflow-hidden">
+		<div class="rounded-lg border border-cs-border overflow-hidden">
 			<table class="w-full text-sm">
-				<thead class="bg-bg-elevated text-xs text-text-muted">
+				<thead class="bg-cs-surface text-xs text-cs-text-muted">
 					<tr>
 						<th class="px-4 py-2 text-left font-medium">Module</th>
 						<th class="px-4 py-2 text-left font-medium">Category</th>
@@ -132,17 +132,17 @@
 				</thead>
 				<tbody class="divide-y divide-border">
 					{#each filtered as mod}
-						<tr class="hover:bg-bg-hover/40 transition-colors">
+						<tr class="hover:bg-cs-surface-2/40 transition-colors">
 							<td class="px-4 py-2.5 font-mono text-xs text-accent">{mod.name}</td>
 							<td class="px-4 py-2.5">
 								<span class="badge">{mod.category}</span>
 							</td>
-							<td class="px-4 py-2.5 text-text-muted text-xs">{mod.description}</td>
+							<td class="px-4 py-2.5 text-cs-text-muted text-xs">{mod.description}</td>
 							<td class="px-4 py-2.5 text-center">
 								{#if mod.available}
 									<CheckCircle size={15} class="inline text-green-400" />
 								{:else}
-									<XCircle size={15} class="inline text-red-400/70" />
+									<XCircle size={15} class="inline text-cs-error/70" />
 								{/if}
 							</td>
 						</tr>

@@ -1,55 +1,77 @@
 @import 'tailwindcss';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/500.css';
 @import '@fontsource/jetbrains-mono/400.css';
 @import '@fontsource/jetbrains-mono/500.css';
 @import '@fontsource/jetbrains-mono/700.css';
 
 @theme {
-  --color-bg: #18181b;
-  --color-bg-elevated: #1f1f23;
-  --color-bg-surface: #27272a;
-  --color-bg-hover: #2d2d31;
-  --color-border: #3f3f46;
-  --color-border-subtle: #2d2d31;
-  --color-text: #fafafa;
-  --color-text-muted: #a1a1aa;
-  --color-text-dim: #71717a;
-  --color-accent: #34d399;
-  --color-accent-hover: #6ee7b7;
-  --color-accent-dim: #065f46;
-  --color-indigo: #818cf8;
-  --color-indigo-hover: #a5b4fc;
-  --color-danger: #f87171;
-  --color-warning: #fbbf24;
-  --color-success: #34d399;
+  /* Cyber-Slate palette */
+  --color-cs-bg:          #1a1d23;
+  --color-cs-surface:     #242831;
+  --color-cs-surface-2:   #2c3040;
+  --color-cs-border:      #333942;
+  --color-cs-text:        #e2e4ea;
+  --color-cs-text-muted:  #7c8394;
+  --color-cs-accent:      #b4befe;
+  --color-cs-accent-dim:  #2a2d4a;
+  --color-cs-success:     #a6e3a1;
+  --color-cs-running:     #89dceb;
+  --color-cs-error:       #f38ba8;
+  --color-cs-warning:     #f9e2af;
+  /* Legacy aliases — used by splitpanes + CodeMirror theme */
+  --color-border:         #333942;
+  --color-border-subtle:  #2c3040;
+  --color-accent-dim:     #2a2d4a;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
-}
+* { scrollbar-width: thin; scrollbar-color: var(--color-cs-border) transparent; }
 
 html {
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--color-cs-bg);
+  color: var(--color-cs-text);
+  font-family: var(--font-sans);
 }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-}
+body { margin: 0; min-height: 100vh; }
 
 ::selection {
-  background: var(--color-accent-dim);
-  color: var(--color-accent);
+  background: var(--color-cs-accent-dim);
+  color: var(--color-cs-accent);
 }
 
-code, pre, .font-mono {
-  font-family: var(--font-mono);
+code, pre, .font-mono { font-family: var(--font-mono); }
+
+/* ── Graph node animations ─────────────────────────────────── */
+@keyframes dash-march {
+  to { stroke-dashoffset: -24; }
 }
 
-/* Splitpanes splitter styling */
+@keyframes glow-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px #f38ba8); }
+  50%       { filter: drop-shadow(0 0 10px #f38ba8); }
+}
+
+.node--running rect {
+  stroke-dasharray: 8 4;
+  animation: dash-march 0.5s linear infinite;
+}
+
+.node--error {
+  filter: drop-shadow(0 0 6px #f38ba8);
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.node--selected rect {
+  stroke: var(--color-cs-accent);
+  stroke-width: 2px;
+}
+
+.node.dimmed { opacity: 0.15; transition: opacity 150ms; }
+
+/* ── Splitpanes splitter ───────────────────────────────────── */
 :global(.splitpanes__splitter) {
   background: var(--color-border-subtle) !important;
   position: relative;
@@ -57,9 +79,5 @@ code, pre, .font-mono {
 :global(.splitpanes__splitter:hover) {
   background: var(--color-accent-dim) !important;
 }
-:global(.splitpanes--horizontal > .splitpanes__splitter) {
-  min-height: 3px;
-}
-:global(.splitpanes--vertical > .splitpanes__splitter) {
-  min-width: 3px;
-}
+:global(.splitpanes--horizontal > .splitpanes__splitter) { min-height: 3px; }
+:global(.splitpanes--vertical > .splitpanes__splitter)   { min-width: 3px; }

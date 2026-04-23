@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { activeScriptId, drawerOpen, tags as allTags } from '$lib/stores';
+	import { graphSelectedNode, flyoutOpen, tags as allTags } from '$lib/stores';
 	import * as api from '$lib/api/client';
 	import { loadScripts, loadTags } from '$lib/stores';
 	import type { Script, Run, Tag, DetectionResult } from '$lib/types';
@@ -165,9 +165,9 @@
 	function statusColor(status: string) {
 		switch (status) {
 			case 'success': return 'text-success';
-			case 'failure': return 'text-danger';
-			case 'timeout': return 'text-warning';
-			default: return 'text-text-dim';
+			case 'failure': return 'text-cs-error';
+			case 'timeout': return 'text-cs-warning';
+			default: return 'text-cs-text-muted';
 		}
 	}
 </script>
@@ -175,8 +175,8 @@
 {#if script}
 	<div class="flex h-full flex-col">
 		<!-- Toolbar -->
-		<div class="flex items-center gap-2 border-b border-border px-4 py-2">
-			<nav class="flex items-center gap-1 text-xs text-text-dim">
+		<div class="flex items-center gap-2 border-b border-cs-border px-4 py-2">
+			<nav class="flex items-center gap-1 text-xs text-cs-text-muted">
 				<a href="/" class="hover:text-text">Scripts</a>
 				<span>/</span>
 				<span class="text-text">{script.name}</span>
@@ -199,23 +199,23 @@
 					<Save size={13} strokeWidth={2} /> {saving ? 'Saving…' : 'Save'}
 				</button>
 			{/if}
-			<button class="ghost-btn text-danger" onclick={deleteScript} title="Delete">
+			<button class="ghost-btn text-cs-error" onclick={deleteScript} title="Delete">
 				<Trash2 size={13} strokeWidth={2} />
 			</button>
 		</div>
 
 		<!-- Detection banner -->
 		{#if detection}
-			<div class="border-b border-border bg-bg-surface px-4 py-2">
+			<div class="border-b border-cs-border bg-cs-surface-2 px-4 py-2">
 				<div class="mb-1 text-xs font-medium text-accent">Auto-Detected</div>
 				{#if detection.description}
-					<p class="mb-1 text-xs text-text-muted">📝 {detection.description}</p>
+					<p class="mb-1 text-xs text-cs-text-muted">📝 {detection.description}</p>
 				{/if}
 				{#if detection.parameters.length > 0}
 					<div class="flex flex-wrap gap-1">
 						{#each detection.parameters as p}
-							<span class="badge font-mono {p.is_secret ? 'border-warning/40 text-warning' : ''}">
-								{p.key} <span class="text-text-dim">({p.source})</span>
+							<span class="badge font-mono {p.is_secret ? 'border-warning/40 text-cs-warning' : ''}">
+								{p.key} <span class="text-cs-text-muted">({p.source})</span>
 							</span>
 						{/each}
 					</div>
@@ -236,13 +236,13 @@
 
 		<!-- Tag management panel -->
 		{#if showTags}
-			<div class="flex items-center gap-2 border-b border-border-subtle bg-bg-surface px-4 py-2">
-				<span class="text-xs text-text-dim shrink-0">Tags:</span>
+			<div class="flex items-center gap-2 border-b border-cs-border bg-cs-surface-2 px-4 py-2">
+				<span class="text-xs text-cs-text-muted shrink-0">Tags:</span>
 				<div class="flex flex-wrap gap-1 flex-1">
 					{#each scriptTags as tag}
 						<span class="badge border-accent/30 text-accent">
 							{tag.name}
-							<button class="ml-1 hover:text-danger" onclick={() => removeTag(tag.id)}>×</button>
+							<button class="ml-1 hover:text-cs-error" onclick={() => removeTag(tag.id)}>×</button>
 						</span>
 					{/each}
 					{#each $allTags.filter((t) => !scriptTags.some((st) => st.id === t.id)) as available}
@@ -271,7 +271,7 @@
 					<!-- Code editor pane -->
 					<Pane minSize={20} size={showExec ? 60 : 100}>
 						<div class="flex h-full flex-col overflow-hidden">
-							<div class="border-b border-border-subtle px-4 py-2">
+							<div class="border-b border-cs-border px-4 py-2">
 								<input
 									class="input text-xs"
 									placeholder="Description…"
@@ -291,13 +291,13 @@
 					{#if showExec}
 						<Pane minSize={15} size={40}>
 							<div class="flex h-full flex-col overflow-hidden bg-bg">
-								<div class="flex items-center gap-2 border-b border-border-subtle px-3 py-1.5">
-									<Terminal size={12} class="text-text-dim" />
-									<span class="text-xs font-medium uppercase tracking-wider text-text-dim">Output</span>
+								<div class="flex items-center gap-2 border-b border-cs-border px-3 py-1.5">
+									<Terminal size={12} class="text-cs-text-muted" />
+									<span class="text-xs font-medium uppercase tracking-wider text-cs-text-muted">Output</span>
 									{#if runResult}
 										<span class={`text-xs ${statusColor(runResult.status)}`}>● {runResult.status}</span>
 										{#if runResult.exit_code !== null}
-											<span class="text-xs text-text-dim">exit: {runResult.exit_code}</span>
+											<span class="text-xs text-cs-text-muted">exit: {runResult.exit_code}</span>
 										{/if}
 									{/if}
 								</div>
@@ -305,7 +305,7 @@
 									{#if logLines.length}
 										<VirtualLog lines={logLines} />
 									{:else}
-										<p class="p-3 text-xs text-text-dim">No output yet</p>
+										<p class="p-3 text-xs text-cs-text-muted">No output yet</p>
 									{/if}
 								</div>
 							</div>
@@ -316,21 +316,22 @@
 			<!-- Execution Panel (right pane) -->
 			{#if showExec}
 				<Pane size={25} minSize={15} maxSize={40}>
-					<div class="flex h-full flex-col border-l border-border overflow-hidden">
-						<div class="border-b border-border-subtle p-3">
-							<h4 class="mb-2 text-xs font-medium uppercase tracking-wider text-text-dim">Environment</h4>
+					<div class="flex h-full flex-col border-l border-cs-border overflow-hidden">
+						<div class="border-b border-cs-border p-3">
+							<h4 class="mb-2 text-xs font-medium uppercase tracking-wider text-cs-text-muted">Environment</h4>
 							{#if script.parameters.length === 0}
-								<p class="text-xs text-text-dim">No parameters defined</p>
+								<p class="text-xs text-cs-text-muted">No parameters defined</p>
 							{:else}
-								{#each script.parameters as param}
+								{#each script.parameters as param, i}
 									<div class="mb-2">
-										<label class="mb-0.5 flex items-center gap-1 text-xs text-text-muted">
+										<label for="param-{i}" class="mb-0.5 flex items-center gap-1 text-xs text-cs-text-muted">
 											{param.key}
 											{#if param.is_secret}
-												<span class="text-warning">🔒</span>
+												<span class="text-cs-warning">🔒</span>
 											{/if}
 										</label>
 										<input
+											id="param-{i}"
 											class="input font-mono text-xs"
 											type={param.is_secret ? 'password' : 'text'}
 											bind:value={envValues[param.key]}
@@ -339,9 +340,9 @@
 								{/each}
 							{/if}
 						</div>
-						<div class="border-b border-border-subtle p-3">
-							<label class="mb-0.5 block text-xs text-text-muted">Timeout (s)</label>
-							<input class="input text-xs" type="number" min="5" max="300" bind:value={timeout} />
+						<div class="border-b border-cs-border p-3">
+							<label for="timeout" class="mb-0.5 block text-xs text-cs-text-muted">Timeout (s)</label>
+							<input id="timeout" class="input text-xs" type="number" min="5" max="300" bind:value={timeout} />
 						</div>
 						<div class="p-3">
 							<button class="btn-primary flex w-full items-center justify-center gap-1.5" onclick={runScript} disabled={running}>
@@ -354,5 +355,5 @@
 		</Splitpanes>
 	</div>
 {:else}
-	<div class="flex h-full items-center justify-center text-text-dim">Loading…</div>
+	<div class="flex h-full items-center justify-center text-cs-text-muted">Loading…</div>
 {/if}

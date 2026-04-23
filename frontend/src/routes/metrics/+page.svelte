@@ -55,54 +55,54 @@
 
 <div class="p-6">
 	<div class="mb-6 flex items-center gap-2">
-		<BarChart3 size={16} strokeWidth={2} class="text-text-dim" />
+		<BarChart3 size={16} strokeWidth={2} class="text-cs-text-muted" />
 		<h1 class="text-sm font-medium">Run Analytics</h1>
 	</div>
 
 	{#if loading}
 		<div class="grid grid-cols-4 gap-3">
 			{#each Array(4) as _}
-				<div class="animate-pulse rounded-lg border border-border bg-bg-elevated p-4">
-					<div class="mb-2 h-3 w-1/2 rounded bg-bg-surface"></div>
-					<div class="h-6 w-1/3 rounded bg-bg-surface"></div>
+				<div class="animate-pulse rounded-lg border border-cs-border bg-cs-surface p-4">
+					<div class="mb-2 h-3 w-1/2 rounded bg-cs-surface-2"></div>
+					<div class="h-6 w-1/3 rounded bg-cs-surface-2"></div>
 				</div>
 			{/each}
 		</div>
 	{:else}
 		<!-- Summary Cards -->
 		<div class="mb-6 grid grid-cols-4 gap-3">
-			<div class="rounded-lg border border-border bg-bg-elevated p-4">
-				<div class="mb-1 flex items-center gap-1.5 text-text-dim">
+			<div class="rounded-lg border border-cs-border bg-cs-surface p-4">
+				<div class="mb-1 flex items-center gap-1.5 text-cs-text-muted">
 					<BarChart3 size={12} /><span class="text-xs uppercase tracking-wider">Total</span>
 				</div>
 				<span class="font-mono text-2xl font-bold">{stats.total}</span>
 			</div>
-			<div class="rounded-lg border border-border bg-bg-elevated p-4">
+			<div class="rounded-lg border border-cs-border bg-cs-surface p-4">
 				<div class="mb-1 flex items-center gap-1.5 text-success">
 					<CheckCircle size={12} /><span class="text-xs uppercase tracking-wider">Success</span>
 				</div>
 				<span class="font-mono text-2xl font-bold text-success">{stats.success}</span>
 			</div>
-			<div class="rounded-lg border border-border bg-bg-elevated p-4">
-				<div class="mb-1 flex items-center gap-1.5 text-danger">
+			<div class="rounded-lg border border-cs-border bg-cs-surface p-4">
+				<div class="mb-1 flex items-center gap-1.5 text-cs-error">
 					<XCircle size={12} /><span class="text-xs uppercase tracking-wider">Failed</span>
 				</div>
-				<span class="font-mono text-2xl font-bold text-danger">{stats.failure}</span>
+				<span class="font-mono text-2xl font-bold text-cs-error">{stats.failure}</span>
 			</div>
-			<div class="rounded-lg border border-border bg-bg-elevated p-4">
-				<div class="mb-1 flex items-center gap-1.5 text-warning">
+			<div class="rounded-lg border border-cs-border bg-cs-surface p-4">
+				<div class="mb-1 flex items-center gap-1.5 text-cs-warning">
 					<Clock size={12} /><span class="text-xs uppercase tracking-wider">Timeout</span>
 				</div>
-				<span class="font-mono text-2xl font-bold text-warning">{stats.timeout}</span>
+				<span class="font-mono text-2xl font-bold text-cs-warning">{stats.timeout}</span>
 			</div>
 		</div>
 
 		<div class="grid grid-cols-2 gap-6">
 			<!-- Runs per Script -->
 			<div>
-				<h3 class="mb-3 text-xs font-medium uppercase tracking-wider text-text-dim">Runs by Script</h3>
+				<h3 class="mb-3 text-xs font-medium uppercase tracking-wider text-cs-text-muted">Runs by Script</h3>
 				{#if scriptStats.length === 0}
-					<p class="text-xs text-text-dim">No data</p>
+					<p class="text-xs text-cs-text-muted">No data</p>
 				{:else}
 					{@const maxTotal = Math.max(...scriptStats.map((s) => s.total))}
 					<div class="flex flex-col gap-2">
@@ -110,11 +110,11 @@
 							<div>
 								<div class="mb-1 flex items-center justify-between text-xs">
 									<span class="font-mono">{entry.name}</span>
-									<span class="text-text-dim">{entry.total} runs</span>
+									<span class="text-cs-text-muted">{entry.total} runs</span>
 								</div>
-								<div class="flex h-3 overflow-hidden rounded bg-bg-surface">
+								<div class="flex h-3 overflow-hidden rounded bg-cs-surface-2">
 									<div class="bg-success/60 transition-all" style="width: {barWidth(entry.success, maxTotal)}"></div>
-									<div class="bg-danger/60 transition-all" style="width: {barWidth(entry.failure, maxTotal)}"></div>
+									<div class="bg-cs-error/20 transition-all" style="width: {barWidth(entry.failure, maxTotal)}"></div>
 								</div>
 							</div>
 						{/each}
@@ -124,22 +124,22 @@
 
 			<!-- Execution Time Trend -->
 			<div>
-				<h3 class="mb-3 text-xs font-medium uppercase tracking-wider text-text-dim">Execution Time (last 20)</h3>
+				<h3 class="mb-3 text-xs font-medium uppercase tracking-wider text-cs-text-muted">Execution Time (last 20)</h3>
 				{#if timeTrend.length === 0}
-					<p class="text-xs text-text-dim">No timing data</p>
+					<p class="text-xs text-cs-text-muted">No timing data</p>
 				{:else}
 					{@const maxDur = Math.max(...timeTrend.map((t) => t.duration))}
 					<div class="flex items-end gap-1" style="height: 120px;">
 						{#each timeTrend as t}
 							{@const h = maxDur > 0 ? (t.duration / maxDur) * 100 : 0}
 							<div
-								class="flex-1 rounded-t transition-all {t.status === 'success' ? 'bg-accent/60' : t.status === 'failure' ? 'bg-danger/60' : 'bg-warning/60'}"
+								class="flex-1 rounded-t transition-all {t.status === 'success' ? 'bg-accent/60' : t.status === 'failure' ? 'bg-cs-error/20' : 'bg-warning/60'}"
 								style="height: {h}%"
 								title="{t.duration.toFixed(1)}s"
 							></div>
 						{/each}
 					</div>
-					<div class="mt-1 flex justify-between text-xs text-text-dim">
+					<div class="mt-1 flex justify-between text-xs text-cs-text-muted">
 						<span>oldest</span>
 						<span>newest</span>
 					</div>
@@ -149,29 +149,29 @@
 
 		<!-- Recent Runs Table -->
 		<div class="mt-8">
-			<h3 class="mb-3 text-xs font-medium uppercase tracking-wider text-text-dim">Recent Runs</h3>
-			<div class="overflow-hidden rounded-lg border border-border">
+			<h3 class="mb-3 text-xs font-medium uppercase tracking-wider text-cs-text-muted">Recent Runs</h3>
+			<div class="overflow-hidden rounded-lg border border-cs-border">
 				<table class="w-full text-xs">
-					<thead class="bg-bg-surface">
+					<thead class="bg-cs-surface-2">
 						<tr>
-							<th class="px-3 py-2 text-left font-medium text-text-dim">Script</th>
-							<th class="px-3 py-2 text-left font-medium text-text-dim">Status</th>
-							<th class="px-3 py-2 text-left font-medium text-text-dim">Exit</th>
-							<th class="px-3 py-2 text-left font-medium text-text-dim">Started</th>
+							<th class="px-3 py-2 text-left font-medium text-cs-text-muted">Script</th>
+							<th class="px-3 py-2 text-left font-medium text-cs-text-muted">Status</th>
+							<th class="px-3 py-2 text-left font-medium text-cs-text-muted">Exit</th>
+							<th class="px-3 py-2 text-left font-medium text-cs-text-muted">Started</th>
 						</tr>
 					</thead>
 					<tbody>
 						{#each allRuns.slice(0, 20) as run}
 							{@const script = $scripts.find((s) => s.id === run.script_id)}
-							<tr class="border-t border-border-subtle hover:bg-bg-hover">
+							<tr class="border-t border-cs-border hover:bg-bg-hover">
 								<td class="px-3 py-2 font-mono">{script?.name ?? '—'}</td>
 								<td class="px-3 py-2">
-									<span class={run.status === 'success' ? 'text-success' : run.status === 'failure' ? 'text-danger' : 'text-warning'}>
+									<span class={run.status === 'success' ? 'text-success' : run.status === 'failure' ? 'text-cs-error' : 'text-cs-warning'}>
 										● {run.status}
 									</span>
 								</td>
-								<td class="px-3 py-2 text-text-dim">{run.exit_code ?? '—'}</td>
-								<td class="px-3 py-2 text-text-dim">{run.start_time ?? '—'}</td>
+								<td class="px-3 py-2 text-cs-text-muted">{run.exit_code ?? '—'}</td>
+								<td class="px-3 py-2 text-cs-text-muted">{run.start_time ?? '—'}</td>
 							</tr>
 						{/each}
 					</tbody>

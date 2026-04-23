@@ -138,25 +138,25 @@
 		const s = nodeStatuses[nodeId];
 		if (!s) return '';
 		const map: Record<string, string> = {
-			pending: 'text-text-dim',
-			running: 'text-warning',
+			pending: 'text-cs-text-muted',
+			running: 'text-cs-warning',
 			success: 'text-success',
-			failure: 'text-danger',
-			skipped: 'text-text-dim',
+			failure: 'text-cs-error',
+			skipped: 'text-cs-text-muted',
 		};
 		return map[s] ?? '';
 	}
 </script>
 
 <div class="flex h-full flex-col">
-	<div class="flex items-center gap-2 border-b border-border px-4 py-2">
-		<Zap size={14} strokeWidth={2} class="text-text-dim" />
+	<div class="flex items-center gap-2 border-b border-cs-border px-4 py-2">
+		<Zap size={14} strokeWidth={2} class="text-cs-text-muted" />
 		<h2 class="text-sm font-medium">Workflow DAGs</h2>
 		<div class="flex-1"></div>
 		{#if selectedWf && selectedWf.nodes.length > 0}
 			{#if executing}
-				<div class="flex items-center gap-2 text-xs text-text-muted">
-					<div class="h-1.5 w-24 rounded-full bg-bg-surface overflow-hidden">
+				<div class="flex items-center gap-2 text-xs text-cs-text-muted">
+					<div class="h-1.5 w-24 rounded-full bg-cs-surface-2 overflow-hidden">
 						<div
 							class="h-full rounded-full bg-accent transition-all"
 							style="width:{executionProgress.total ? (executionProgress.completed / executionProgress.total) * 100 : 0}%"
@@ -164,7 +164,7 @@
 					</div>
 					{executionProgress.completed}/{executionProgress.total}
 				</div>
-				<button class="ghost-btn flex items-center gap-1.5 text-danger" onclick={stopExecution}>
+				<button class="ghost-btn flex items-center gap-1.5 text-cs-error" onclick={stopExecution}>
 					<Square size={13} strokeWidth={2} /> Stop
 				</button>
 			{:else}
@@ -182,14 +182,14 @@
 	</div>
 
 	{#if showCreate}
-		<div class="flex items-end gap-2 border-b border-border-subtle bg-bg-surface px-4 py-3">
+		<div class="flex items-end gap-2 border-b border-cs-border bg-cs-surface-2 px-4 py-3">
 			<div>
-				<label class="mb-0.5 block text-xs text-text-dim">Name</label>
-				<input class="input text-xs" bind:value={newName} placeholder="pipeline-name" />
+				<label for="wf-name" class="mb-0.5 block text-xs text-cs-text-muted">Name</label>
+				<input id="wf-name" class="input text-xs" bind:value={newName} placeholder="pipeline-name" />
 			</div>
 			<div class="flex-1">
-				<label class="mb-0.5 block text-xs text-text-dim">Description</label>
-				<input class="input text-xs" bind:value={newDesc} placeholder="Optional description" />
+				<label for="wf-desc" class="mb-0.5 block text-xs text-cs-text-muted">Description</label>
+				<input id="wf-desc" class="input text-xs" bind:value={newDesc} placeholder="Optional description" />
 			</div>
 			<button class="btn-primary text-xs" onclick={createWorkflow} disabled={creating}>Create</button>
 		</div>
@@ -197,25 +197,25 @@
 
 	<div class="flex flex-1 overflow-hidden">
 		<!-- Workflow list -->
-		<div class="w-56 shrink-0 overflow-y-auto border-r border-border bg-bg-elevated">
+		<div class="w-56 shrink-0 overflow-y-auto border-r border-cs-border bg-cs-surface">
 			{#if loading}
 				{#each Array(3) as _}
-					<div class="animate-pulse border-b border-border-subtle px-3 py-3">
-						<div class="h-3 w-3/4 rounded bg-bg-surface"></div>
+					<div class="animate-pulse border-b border-cs-border px-3 py-3">
+						<div class="h-3 w-3/4 rounded bg-cs-surface-2"></div>
 					</div>
 				{/each}
 			{:else if $workflows.length === 0}
-				<div class="p-4 text-center text-xs text-text-dim">No workflows yet</div>
+				<div class="p-4 text-center text-xs text-cs-text-muted">No workflows yet</div>
 			{:else}
 				{#each $workflows as wf}
 					<div
-						class="flex w-full items-center justify-between border-b border-border-subtle px-3 py-2.5 text-left transition-colors hover:bg-bg-hover {selectedWf?.id === wf.id ? 'bg-bg-surface' : ''}"
+						class="flex w-full items-center justify-between border-b border-cs-border px-3 py-2.5 text-left transition-colors hover:bg-bg-hover {selectedWf?.id === wf.id ? 'bg-cs-surface-2' : ''}"
 					>
 						<button class="min-w-0 flex-1 text-left" onclick={() => selectWorkflow(wf)}>
 							<div class="text-sm font-medium">{wf.name}</div>
-							<div class="text-xs text-text-dim">{wf.nodes.length} nodes</div>
+							<div class="text-xs text-cs-text-muted">{wf.nodes.length} nodes</div>
 						</button>
-						<button class="ghost-btn p-0.5 text-danger" onclick={() => deleteWorkflow(wf.id)}>
+						<button class="ghost-btn p-0.5 text-cs-error" onclick={() => deleteWorkflow(wf.id)}>
 							<Trash2 size={11} />
 						</button>
 					</div>
@@ -229,8 +229,8 @@
 				<!-- Add node -->
 				<div class="mb-4 flex items-end gap-2">
 					<div>
-						<label class="mb-0.5 block text-xs text-text-dim">Add Script Node</label>
-						<select class="input text-xs" bind:value={addNodeScriptId}>
+						<label for="add-node-script" class="mb-0.5 block text-xs text-cs-text-muted">Add Script Node</label>
+						<select id="add-node-script" class="input text-xs" bind:value={addNodeScriptId}>
 							<option value="">Select…</option>
 							{#each $scripts as s}
 								<option value={s.id}>{s.name}</option>
@@ -242,7 +242,7 @@
 
 				<!-- Visual DAG (simplified node view) -->
 				{#if selectedWf.nodes.length === 0}
-					<div class="flex h-48 items-center justify-center rounded-lg border border-dashed border-border text-xs text-text-dim">
+					<div class="flex h-48 items-center justify-center rounded-lg border border-dashed border-cs-border text-xs text-cs-text-muted">
 						Add script nodes to build a workflow DAG
 					</div>
 				{:else}
@@ -275,7 +275,7 @@
 						{#each selectedWf.nodes as node}
 							{@const script = $scripts.find((s) => s.id === node.script_id)}
 							<div
-								class="absolute rounded-lg border-2 bg-bg-elevated p-3 shadow-lg transition-all {runtimeColor[script?.runtime ?? 'py']} {nodeStatusClass(node.id)}"
+								class="absolute rounded-lg border-2 bg-cs-surface p-3 shadow-lg transition-all {runtimeColor[script?.runtime ?? 'py']} {nodeStatusClass(node.id)}"
 								style="left: {node.position_x}px; top: {node.position_y}px; width: 120px;"
 							>
 								<div class="flex items-center gap-1.5">
@@ -284,7 +284,7 @@
 									{/if}
 									<span class="truncate font-mono text-xs font-medium">{script?.name ?? '?'}</span>
 								</div>
-								<div class="text-xs text-text-dim">{script?.runtime ?? '?'}</div>
+								<div class="text-xs text-cs-text-muted">{script?.runtime ?? '?'}</div>
 								<!-- Connect button -->
 								{#each selectedWf.nodes.filter((n) => n.id !== node.id) as other}
 									{@const alreadyConnected = selectedWf.edges.some(
@@ -292,7 +292,7 @@
 									)}
 									{#if !alreadyConnected}
 										<button
-											class="mt-1 block w-full truncate rounded bg-bg-surface px-1 py-0.5 text-left text-xs text-text-dim hover:text-accent"
+											class="mt-1 block w-full truncate rounded bg-cs-surface-2 px-1 py-0.5 text-left text-xs text-cs-text-muted hover:text-accent"
 											onclick={() => addEdge(node.id, other.id)}
 										>
 											→ {$scripts.find((s) => s.id === other.script_id)?.name ?? '?'}
@@ -304,7 +304,7 @@
 					</div>
 				{/if}
 			{:else}
-				<div class="flex h-full items-center justify-center text-xs text-text-dim">
+				<div class="flex h-full items-center justify-center text-xs text-cs-text-muted">
 					Select or create a workflow
 				</div>
 			{/if}
