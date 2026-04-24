@@ -168,6 +168,14 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# USO specific
+data/
+!data/.gitkeep
+.streamlit/secrets.toml
+*.db
+*.db-wal
+*.db-shm
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
@@ -205,3 +213,7 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+notes/*
+learnings.md
+.github/*.md
+plan.md
