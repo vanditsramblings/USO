@@ -74,6 +74,28 @@ def delete_node(node_id: str) -> None:
     conn.commit()
 
 
+def update_node(node_id: str, position_x: float | None, position_y: float | None,
+                config: dict | None) -> dict | None:
+    conn = get_connection()
+    row = conn.execute("SELECT * FROM workflow_nodes WHERE id = ?", (node_id,)).fetchone()
+    if not row:
+        return None
+    current = dict(row)
+    new_x = position_x if position_x is not None else current["position_x"]
+    new_y = position_y if position_y is not None else current["position_y"]
+    # config=None means "keep current"; pass {} explicitly to clear
+    new_config = json.dumps(config) if config is not None else current["config"]
+    conn.execute(
+        "UPDATE workflow_nodes SET position_x = ?, position_y = ?, config = ? WHERE id = ?",
+        (new_x, new_y, new_config, node_id),
+    )
+    conn.commit()
+    updated = conn.execute("SELECT * FROM workflow_nodes WHERE id = ?", (node_id,)).fetchone()
+    d = dict(updated)
+    d["config"] = json.loads(d["config"]) if d["config"] else None
+    return d
+
+
 # --- Workflow Edges ---
 
 

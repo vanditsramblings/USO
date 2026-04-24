@@ -196,6 +196,82 @@ def test_delete_workflow(client):
     assert resp.status_code == 204
 
 
+def test_delete_workflow_node(client):
+    sid = _create_script(client)
+    wf = client.post("/api/workflows", json={"name": "wf"}).json()
+    node = client.post(
+        f"/api/workflows/{wf['id']}/nodes",
+        json={"script_id": sid, "position_x": 0, "position_y": 0},
+    ).json()
+    resp = client.delete(f"/api/workflows/{wf['id']}/nodes/{node['id']}")
+    assert resp.status_code == 204
+    # Verify the workflow now has no nodes
+    fresh = client.get(f"/api/workflows/{wf['id']}").json()
+    assert len(fresh["nodes"]) == 0
+
+
+def test_delete_workflow_node_not_found(client):
+    wf = client.post("/api/workflows", json={"name": "wf2"}).json()
+    resp = client.delete(f"/api/workflows/{wf['id']}/nodes/nonexistent")
+    assert resp.status_code == 404
+
+
+def test_update_workflow_node_position(client):
+    sid = _create_script(client)
+    wf = client.post("/api/workflows", json={"name": "wf"}).json()
+    node = client.post(
+        f"/api/workflows/{wf['id']}/nodes",
+        json={"script_id": sid, "position_x": 0, "position_y": 0},
+    ).json()
+    resp = client.patch(
+        f"/api/workflows/{wf['id']}/nodes/{node['id']}",
+        json={"position_x": 350, "position_y": 200},
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["position_x"] == 350
+    assert data["position_y"] == 200
+
+
+def test_update_workflow_node_config(client):
+    sid = _create_script(client)
+    wf = client.post("/api/workflows", json={"name": "wf"}).json()
+    node = client.post(
+        f"/api/workflows/{wf['id']}/nodes",
+        json={"script_id": sid},
+    ).json()
+    resp = client.patch(
+        f"/api/workflows/{wf['id']}/nodes/{node['id']}",
+        json={"config": {"DB_HOST": "localhost", "PORT": "5432"}},
+    )
+    assert resp.status_code == 200
+    assert resp.json()["config"] == {"DB_HOST": "localhost", "PORT": "5432"}
+
+
+def test_delete_workflow_edge(client):
+    s1 = _create_script(client, "aa")
+    s2 = _create_script(client, "bb")
+    wf = client.post(
+        "/api/workflows",
+        json={"name": "wf", "nodes": [{"script_id": s1}, {"script_id": s2}]},
+    ).json()
+    n1, n2 = wf["nodes"][0]["id"], wf["nodes"][1]["id"]
+    edge = client.post(
+        f"/api/workflows/{wf['id']}/edges",
+        json={"source_node_id": n1, "target_node_id": n2},
+    ).json()
+    resp = client.delete(f"/api/workflows/{wf['id']}/edges/{edge['id']}")
+    assert resp.status_code == 204
+    fresh = client.get(f"/api/workflows/{wf['id']}").json()
+    assert len(fresh["edges"]) == 0
+
+
+def test_delete_workflow_edge_not_found(client):
+    wf = client.post("/api/workflows", json={"name": "wf3"}).json()
+    resp = client.delete(f"/api/workflows/{wf['id']}/edges/nonexistent")
+    assert resp.status_code == 404
+
+
 def test_detect_endpoint(client):
     resp = client.post(
         "/api/detect",

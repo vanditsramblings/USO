@@ -12,6 +12,7 @@ from uso.models import (
     WorkflowEdgeOut,
     WorkflowNodeCreate,
     WorkflowNodeOut,
+    WorkflowNodeUpdate,
     WorkflowOut,
     WorkflowRunOut,
 )
@@ -62,6 +63,22 @@ def add_node(workflow_id: str, data: WorkflowNodeCreate):
     return node
 
 
+@router.patch("/{workflow_id}/nodes/{node_id}", response_model=WorkflowNodeOut)
+def update_node(workflow_id: str, node_id: str, data: WorkflowNodeUpdate):
+    node = workflow_service.update_node(
+        workflow_id, node_id, data.position_x, data.position_y, data.config
+    )
+    if not node:
+        raise HTTPException(status_code=404, detail="Node not found")
+    return node
+
+
+@router.delete("/{workflow_id}/nodes/{node_id}", status_code=204)
+def delete_node(workflow_id: str, node_id: str):
+    if not workflow_service.delete_node(workflow_id, node_id):
+        raise HTTPException(status_code=404, detail="Node not found")
+
+
 @router.post("/{workflow_id}/edges", response_model=WorkflowEdgeOut, status_code=201)
 def add_edge(workflow_id: str, data: WorkflowEdgeCreate):
     edge = workflow_service.add_edge(
@@ -70,6 +87,12 @@ def add_edge(workflow_id: str, data: WorkflowEdgeCreate):
     if not edge:
         raise HTTPException(status_code=404, detail="Workflow not found")
     return edge
+
+
+@router.delete("/{workflow_id}/edges/{edge_id}", status_code=204)
+def delete_edge(workflow_id: str, edge_id: str):
+    if not workflow_service.delete_edge(workflow_id, edge_id):
+        raise HTTPException(status_code=404, detail="Edge not found")
 
 
 @router.post("/{workflow_id}/execute", response_model=WorkflowRunOut, status_code=201)

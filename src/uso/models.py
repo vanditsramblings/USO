@@ -179,6 +179,12 @@ class WorkflowNodeCreate(BaseModel):
     config: dict | None = None
 
 
+class WorkflowNodeUpdate(BaseModel):
+    position_x: float | None = None
+    position_y: float | None = None
+    config: dict | None = None
+
+
 class WorkflowEdgeCreate(BaseModel):
     source_node_id: str
     target_node_id: str

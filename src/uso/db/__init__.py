@@ -48,6 +48,7 @@ from .workflows import (
     get_workflow_run,
     list_workflow_runs,
     list_workflows,
+    update_node,
     update_node_run,
     update_workflow_run,
 )
@@ -101,6 +102,7 @@ __all__ = [
     "list_workflows",
     "tag_script",
     "untag_script",
+    "update_node",
     "update_node_run",
     "update_run",
     "update_schedule_enabled",

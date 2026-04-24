@@ -89,6 +89,43 @@ def add_edge(workflow_id: str, source_node_id: str, target_node_id: str,
     return next((WorkflowEdgeOut(**e) for e in edges if e["id"] == edge_id), None)
 
 
+def delete_node(workflow_id: str, node_id: str) -> bool:
+    """Delete a workflow node (cascades edges attached to it)."""
+    wf = db.get_workflow(workflow_id)
+    if not wf:
+        return False
+    nodes = db.get_nodes(workflow_id)
+    if not any(n["id"] == node_id for n in nodes):
+        return False
+    db.delete_node(node_id)
+    return True
+
+
+def delete_edge(workflow_id: str, edge_id: str) -> bool:
+    """Delete a workflow edge."""
+    wf = db.get_workflow(workflow_id)
+    if not wf:
+        return False
+    edges = db.get_workflow_edges(workflow_id)
+    if not any(e["id"] == edge_id for e in edges):
+        return False
+    db.delete_workflow_edge(edge_id)
+    return True
+
+
+def update_node(workflow_id: str, node_id: str, position_x: float | None = None,
+                position_y: float | None = None,
+                config: dict | None = None) -> WorkflowNodeOut | None:
+    """Update node position or config. Returns updated node or None if not found."""
+    wf = db.get_workflow(workflow_id)
+    if not wf:
+        return None
+    updated = db.update_node(node_id, position_x, position_y, config)
+    if not updated:
+        return None
+    return WorkflowNodeOut(**updated)
+
+
 def _topological_sort(nodes: list[dict], edges: list[dict]) -> list[str]:
     """Return node IDs in topological order (Kahn's algorithm)."""
     node_ids = {n["id"] for n in nodes}
