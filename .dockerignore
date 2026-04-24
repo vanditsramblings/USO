@@ -3,11 +3,12 @@
 .venv
 .env
 __pycache__
+**/__pycache__
 *.pyc
+**/*.pyc
 .pytest_cache
 .ruff_cache
 *.egg-info
-build/
 dist/
 data/
 tests/
@@ -18,3 +19,9 @@ reference/
 .pre-commit-config.yaml
 Makefile
 start.sh
+.streamlit/
+app.py
+pages/
+frontend/node_modules/
+frontend/.svelte-kit/
+frontend/build/
