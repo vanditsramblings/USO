@@ -6,27 +6,127 @@
 @import '@fontsource/jetbrains-mono/700.css';
 
 @theme {
-  /* Cyber-Slate palette */
-  --color-cs-bg:          #1a1d23;
-  --color-cs-surface:     #242831;
-  --color-cs-surface-2:   #2c3040;
-  --color-cs-border:      #333942;
-  --color-cs-text:        #e2e4ea;
-  --color-cs-text-muted:  #7c8394;
-  --color-cs-accent:      #b4befe;
-  --color-cs-accent-dim:  #2a2d4a;
-  --color-cs-success:     #a6e3a1;
-  --color-cs-running:     #89dceb;
-  --color-cs-error:       #f38ba8;
-  --color-cs-warning:     #f9e2af;
-  /* Legacy aliases — used by splitpanes + CodeMirror theme */
-  --color-border:         #333942;
-  --color-border-subtle:  #2c3040;
-  --color-accent-dim:     #2a2d4a;
+  --color-cs-bg:         #050505;
+  --color-cs-surface:    #121212;
+  --color-cs-surface-2:  #1e1e1e;
+  --color-cs-border:     #2a2a2a;
+  --color-cs-text:       #d5af38;
+  --color-cs-text-muted: #888888;
+  --color-cs-accent:     #d4af37;
+  --color-cs-accent-dim: #2a2210;
+  --color-cs-success:    #4caf50;
+  --color-cs-running:    #d4af37;
+  --color-cs-error:      #e53935;
+  --color-cs-warning:    #ff9800;
+  --color-border:        #2a2a2a;
+  --color-border-subtle: #1e1e1e;
+  --color-accent-dim:    #2a2210;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
+/* ── Theme: Cyber-Slate (default) ─────────────────────────── */
+/*
+[data-theme="cyber-slate"] {
+  --color-cs-bg:         #1a1d23;
+  --color-cs-surface:    #242831;
+  --color-cs-surface-2:  #2c3040;
+  --color-cs-border:     #333942;
+  --color-cs-text:       #000000;
+  --color-cs-text-muted: #7c8394;
+  --color-cs-accent:     #b4befe;
+  --color-cs-accent-dim: #2a2d4a;
+  --color-cs-success:    #a6e3a1;
+  --color-cs-running:    #89dceb;
+  --color-cs-error:      #f38ba8;
+  --color-cs-warning:    #f9e2af;
+  --color-border:        #333942;
+  --color-border-subtle: #2c3040;
+  --color-accent-dim:    #2a2d4a;
+}
+  */
+
+/* ── Theme: Neon Flux (Cyberpunk) ─────────────────────────── */
+/*
+[data-theme="neon-flux"] {
+  --color-cs-bg:         #0f111a;
+  --color-cs-surface:    #1a1d2d;
+  --color-cs-surface-2:  #252940;
+  --color-cs-border:     #313555;
+  --color-cs-text:       #000000;
+  --color-cs-text-muted: #94a3b8;
+  --color-cs-accent:     #00f0ff;
+  --color-cs-accent-dim: #003d40;
+  --color-cs-success:    #00ff9d;
+  --color-cs-running:    #00f0ff;
+  --color-cs-error:      #ff0055;
+  --color-cs-warning:    #ffcc44;
+  --color-border:        #313555;
+  --color-border-subtle: #252940;
+  --color-accent-dim:    #003d40;
+}
+  */
+
+/* ── Theme: Obsidian Gold (Premium) ───────────────────────── */
+
+[data-theme="obsidian-gold"] {
+  --color-cs-bg:         #050505;
+  --color-cs-surface:    #121212;
+  --color-cs-surface-2:  #1e1e1e;
+  --color-cs-border:     #2a2a2a;
+  --color-cs-text:       #d5af38;
+  --color-cs-text-muted: #888888;
+  --color-cs-accent:     #d4af37;
+  --color-cs-accent-dim: #2a2210;
+  --color-cs-success:    #4caf50;
+  --color-cs-running:    #d4af37;
+  --color-cs-error:      #e53935;
+  --color-cs-warning:    #ff9800;
+  --color-border:        #2a2a2a;
+  --color-border-subtle: #1e1e1e;
+  --color-accent-dim:    #2a2210;
+}
+
+/* ── Theme: Retro Terminal (Hacker) ───────────────────────── */
+/*
+[data-theme="retro-terminal"] {
+  --color-cs-bg:         #000000;
+  --color-cs-surface:    #0a0a0a;
+  --color-cs-surface-2:  #111111;
+  --color-cs-border:     #1a2a1a;
+  --color-cs-text:       #146500;
+  --color-cs-text-muted: #1a8000;
+  --color-cs-accent:     #33ff00;
+  --color-cs-accent-dim: #0a1a0a;
+  --color-cs-success:    #33ff00;
+  --color-cs-running:    #33ff00;
+  --color-cs-error:      #ff3300;
+  --color-cs-warning:    #ffcc00;
+  --color-border:        #1a2a1a;
+  --color-border-subtle: #111111;
+  --color-accent-dim:    #0a1a0a;
+}
+*/
+/* ── Theme: Midnight Blueprint (Professional) ─────────────── */
+/*
+[data-theme="midnight-blueprint"] {
+  --color-cs-bg:         #070d1a;
+  --color-cs-surface:    #0d1929;
+  --color-cs-surface-2:  #132135;
+  --color-cs-border:     #1e3050;
+  --color-cs-text:       #000000;
+  --color-cs-text-muted: #6b8ab8;
+  --color-cs-accent:     #4a9eff;
+  --color-cs-accent-dim: #0d2040;
+  --color-cs-success:    #22d3a0;
+  --color-cs-running:    #4a9eff;
+  --color-cs-error:      #ff5565;
+  --color-cs-warning:    #f9b234;
+  --color-border:        #1e3050;
+  --color-border-subtle: #132135;
+  --color-accent-dim:    #0d2040;
+}
+*/
 * { scrollbar-width: thin; scrollbar-color: var(--color-cs-border) transparent; }
 
 html {
@@ -43,6 +143,48 @@ body { margin: 0; min-height: 100vh; }
 }
 
 code, pre, .font-mono { font-family: var(--font-mono); }
+
+/* ── Sidebar nav icon glow ─────────────────────────────────── */
+.nav-icon-active {
+  filter: drop-shadow(0 0 6px var(--color-cs-accent));
+}
+.group:hover .nav-icon-hover {
+  filter: drop-shadow(0 0 4px var(--color-cs-accent));
+}
+
+/* ── Status dot animations ─────────────────────────────────── */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--color-cs-running); }
+  50%       { opacity: 0.8; box-shadow: 0 0 0 4px transparent; }
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+.status-dot--running {
+  background: var(--color-cs-running);
+  animation: status-pulse 1.5s ease-in-out infinite;
+}
+.status-dot--success { background: var(--color-cs-success); }
+.status-dot--failure { background: var(--color-cs-error); }
+.status-dot--pending { background: var(--color-cs-text-muted); }
+
+/* ── Tag pill ──────────────────────────────────────────────── */
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: color-mix(in srgb, var(--color-cs-accent) 12%, transparent);
+  color: var(--color-cs-accent);
+  border: 1px solid color-mix(in srgb, var(--color-cs-accent) 25%, transparent);
+}
 
 /* ── Graph node animations ─────────────────────────────────── */
 @keyframes dash-march {
@@ -81,3 +223,90 @@ code, pre, .font-mono { font-family: var(--font-mono); }
 }
 :global(.splitpanes--horizontal > .splitpanes__splitter) { min-height: 3px; }
 :global(.splitpanes--vertical > .splitpanes__splitter)   { min-width: 3px; }
+
+/* ── Global utility classes ────────────────────────────────── */
+.ghost-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  color: var(--color-cs-text-muted);
+  transition: color 200ms cubic-bezier(0.4,0,0.2,1), background 200ms cubic-bezier(0.4,0,0.2,1);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+.ghost-btn:hover {
+  background: var(--color-cs-surface-2);
+  color: var(--color-cs-text);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid var(--color-cs-border);
+  color: var(--color-cs-text-muted);
+}
+
+.btn-primary {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--color-cs-accent-dim);
+  color: var(--color-cs-accent);
+  border: 1px solid var(--color-cs-accent);
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.4,0,0.2,1);
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+.btn-primary:hover {
+  background: var(--color-cs-accent);
+  color: var(--color-cs-bg);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  background: transparent;
+  color: var(--color-cs-error);
+  border: 1px solid var(--color-cs-error);
+  cursor: pointer;
+  transition: all 200ms cubic-bezier(0.4,0,0.2,1);
+}
+.btn-danger:hover {
+  background: var(--color-cs-error);
+  color: var(--color-cs-bg);
+}
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  background: var(--color-cs-surface-2);
+  color: var(--color-cs-text);
+  border: 1px solid var(--color-cs-border);
+  outline: none;
+  width: 100%;
+  transition: border-color 200ms cubic-bezier(0.4,0,0.2,1);
+}
+.input:focus {
+  border-color: var(--color-cs-accent);
+}

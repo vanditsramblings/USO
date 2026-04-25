@@ -217,3 +217,12 @@ notes/*
 learnings.md
 .github/*.md
 plan.md
+node_modules/
+demo-recorder.spec.ts
+.last-run.json
+palette.png
+README_SNIPPET.md
+package.json
+package-lock.json
+*webm
+playwright.config.ts

@@ -39,6 +39,23 @@ USO is a self-hosted platform for organizing, executing, and monitoring scripts 
 
 ---
 
+## Demo
+
+**See USO in action** — 40-second walkthrough of all major features:
+
+![USO Demo — Script registry, workflows, dependency graph, and more](recordings/app-demo.gif)
+
+Watch the demo to see:
+- Script library with smart search and filtering
+- Auto-detection of script parameters and tags
+- One-click execution with live log streaming
+- Visual workflow builder for multi-step pipelines
+- Interactive D3 dependency graph
+- Real-time analytics dashboard
+- Scheduled script triggers
+
+---
+
 ## Quick Start
 
 ### Local (recommended for development)

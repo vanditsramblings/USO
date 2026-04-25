@@ -422,6 +422,7 @@
 
 				<!-- XYFlow canvas -->
 				<div class="relative flex-1">
+					{#key selectedWf.id}
 					<SvelteFlow
 						{nodes}
 						{edges}
@@ -441,6 +442,7 @@
 						<Controls />
 						<Background variant={BackgroundVariant.Dots} gap={20} size={1} patternColor="#333942" />
 					</SvelteFlow>
+					{/key}
 
 					{#if selectedWf.nodes.length === 0}
 						<div class="pointer-events-none absolute inset-0 flex items-center justify-center">
