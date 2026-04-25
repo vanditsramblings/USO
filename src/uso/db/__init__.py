@@ -26,6 +26,7 @@ from .tags import (
     delete_tag,
     get_script_tags,
     get_scripts_by_tag,
+    get_tags_for_scripts,
     get_tag,
     get_tag_by_name,
     list_tags,

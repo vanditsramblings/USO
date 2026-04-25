@@ -1,8 +1,17 @@
 """Script service — business logic for script CRUD."""
 
 from uso import db
-from uso.models import ParameterCreate, ParameterOut, ScriptCreate, ScriptOut, ScriptUpdate
+from uso.models import ParameterCreate, ParameterOut, ScriptCreate, ScriptOut, ScriptUpdate, TagOut
 from uso.services import tag_service
+
+
+def _build_script(row: dict, params: list[dict], tags: list[dict]) -> ScriptOut:
+    """Construct a ScriptOut from raw DB dicts."""
+    return ScriptOut(
+        **row,
+        parameters=[ParameterOut(**p) for p in params],
+        tags=[TagOut(**t) for t in tags],
+    )
 
 
 def register_script(data: ScriptCreate) -> ScriptOut:
@@ -22,15 +31,13 @@ def register_script(data: ScriptCreate) -> ScriptOut:
 
 
 def get_script(script_id: str) -> ScriptOut | None:
-    """Get a script by ID with its parameters."""
+    """Get a script by ID with its parameters and tags."""
     row = db.get_script(script_id)
     if not row:
         return None
     params = db.get_parameters(script_id)
-    return ScriptOut(
-        **row,
-        parameters=[ParameterOut(**p) for p in params],
-    )
+    tags = db.get_script_tags(script_id)
+    return _build_script(row, params, tags)
 
 
 def get_script_by_name(name: str) -> ScriptOut | None:
@@ -38,19 +45,25 @@ def get_script_by_name(name: str) -> ScriptOut | None:
     if not row:
         return None
     params = db.get_parameters(row["id"])
-    return ScriptOut(
-        **row,
-        parameters=[ParameterOut(**p) for p in params],
-    )
+    tags = db.get_script_tags(row["id"])
+    return _build_script(row, params, tags)
 
 
 def list_scripts() -> list[ScriptOut]:
+    """List all scripts, batch-fetching tags in a single query (no N+1)."""
     rows = db.list_scripts()
-    result = []
+    if not rows:
+        return []
+    script_ids = [row["id"] for row in rows]
+    # Batch fetch params and tags
+    all_params: dict[str, list[dict]] = {sid: [] for sid in script_ids}
     for row in rows:
-        params = db.get_parameters(row["id"])
-        result.append(ScriptOut(**row, parameters=[ParameterOut(**p) for p in params]))
-    return result
+        all_params[row["id"]] = db.get_parameters(row["id"])
+    all_tags = db.get_tags_for_scripts(script_ids)
+    return [
+        _build_script(row, all_params[row["id"]], all_tags.get(row["id"], []))
+        for row in rows
+    ]
 
 
 def update_script(script_id: str, data: ScriptUpdate) -> ScriptOut | None:
