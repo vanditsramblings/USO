@@ -72,3 +72,24 @@ def get_scripts_by_tag(tag_id: str) -> list[str]:
             "SELECT script_id FROM script_tags WHERE tag_id = ?", (tag_id,)
         ).fetchall()
     ]
+
+
+def get_tags_for_scripts(script_ids: list[str]) -> dict[str, list[dict]]:
+    """Return a mapping of script_id → list of tag dicts for all given script IDs.
+    Uses a single query instead of one per script."""
+    if not script_ids:
+        return {}
+    placeholders = ",".join("?" * len(script_ids))
+    conn = get_connection()
+    rows = conn.execute(
+        f"SELECT st.script_id, t.id, t.name, t.created_at "
+        f"FROM tags t JOIN script_tags st ON t.id = st.tag_id "
+        f"WHERE st.script_id IN ({placeholders}) ORDER BY t.name",
+        script_ids,
+    ).fetchall()
+    result: dict[str, list[dict]] = {sid: [] for sid in script_ids}
+    for row in rows:
+        result[row["script_id"]].append(
+            {"id": row["id"], "name": row["name"], "created_at": row["created_at"]}
+        )
+    return result

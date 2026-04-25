@@ -46,6 +46,7 @@ class ScriptOut(BaseModel):
     created_at: str
     updated_at: str
     parameters: list["ParameterOut"] = []
+    tags: list["TagOut"] = []
 
 
 # --- Parameter ---
