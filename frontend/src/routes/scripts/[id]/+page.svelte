@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { graphSelectedNode, flyoutOpen, tags as allTags } from '$lib/stores';
+	import { graphSelectedNode, flyoutOpen, tags as allTags, activeScriptId, drawerOpen } from '$lib/stores';
 	import * as api from '$lib/api/client';
 	import { loadScripts, loadTags } from '$lib/stores';
 	import type { Script, Run, Tag, DetectionResult } from '$lib/types';
@@ -159,7 +159,7 @@
 		if (!script || !confirm(`Delete "${script.name}"?`)) return;
 		await api.scripts.delete(script.id);
 		await loadScripts();
-		window.location.href = '/';
+		window.location.href = '/scripts';
 	}
 
 	function statusColor(status: string) {
@@ -177,7 +177,7 @@
 		<!-- Toolbar -->
 		<div class="flex items-center gap-2 border-b border-cs-border px-4 py-2">
 			<nav class="flex items-center gap-1 text-xs text-cs-text-muted">
-				<a href="/" class="hover:text-text">Scripts</a>
+				<a href="/scripts" class="hover:text-cs-text">Scripts</a>
 				<span>/</span>
 				<span class="text-text">{script.name}</span>
 			</nav>
@@ -236,30 +236,46 @@
 
 		<!-- Tag management panel -->
 		{#if showTags}
-			<div class="flex items-center gap-2 border-b border-cs-border bg-cs-surface-2 px-4 py-2">
-				<span class="text-xs text-cs-text-muted shrink-0">Tags:</span>
-				<div class="flex flex-wrap gap-1 flex-1">
-					{#each scriptTags as tag}
-						<span class="badge border-accent/30 text-accent">
-							{tag.name}
-							<button class="ml-1 hover:text-cs-error" onclick={() => removeTag(tag.id)}>×</button>
-						</span>
-					{/each}
-					{#each $allTags.filter((t) => !scriptTags.some((st) => st.id === t.id)) as available}
-						<button
-							class="badge cursor-pointer hover:border-accent/30 hover:text-accent"
-							onclick={() => addTag(available.name)}
-						>{available.name}</button>
-					{/each}
+			<div class="border-b border-cs-border bg-cs-surface-2 px-4 py-3">
+				<!-- Row 1: Applied tags -->
+				<div class="mb-2 flex items-start gap-3">
+					<span class="mt-0.5 shrink-0 text-[11px] font-semibold uppercase tracking-wider text-cs-text-muted w-16">Applied</span>
+					<div class="flex flex-wrap gap-1.5 flex-1 min-h-[24px]">
+						{#each scriptTags as tag}
+							<span class="tag-pill flex items-center gap-1">
+								{tag.name}
+								<button class="ml-0.5 leading-none hover:text-cs-error" onclick={() => removeTag(tag.id)} aria-label="Remove tag">×</button>
+							</span>
+						{/each}
+						{#if scriptTags.length === 0}
+							<span class="text-xs text-cs-text-muted italic">None applied</span>
+						{/if}
+					</div>
 				</div>
-				<div class="flex gap-1 shrink-0">
+				<!-- Row 2: Available tags to add -->
+				{#if $allTags.filter((t) => !scriptTags.some((st) => st.id === t.id)).length > 0}
+					<div class="mb-2 flex items-start gap-3">
+						<span class="mt-0.5 shrink-0 text-[11px] font-semibold uppercase tracking-wider text-cs-text-muted w-16">Add</span>
+						<div class="flex flex-wrap gap-1.5 flex-1">
+							{#each $allTags.filter((t) => !scriptTags.some((st) => st.id === t.id)) as available}
+								<button
+									class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border border-cs-border text-cs-text-muted transition-colors hover:border-cs-accent hover:text-cs-accent cursor-pointer"
+									onclick={() => addTag(available.name)}
+								>{available.name} +</button>
+							{/each}
+						</div>
+					</div>
+				{/if}
+				<!-- Row 3: New tag input -->
+				<div class="flex items-center gap-2">
+					<span class="shrink-0 text-[11px] font-semibold uppercase tracking-wider text-cs-text-muted w-16">New</span>
 					<input
-						class="input text-xs w-24"
-						placeholder="New tag…"
+						class="input text-xs w-32"
+						placeholder="tag-name…"
 						bind:value={newTagInput}
 						onkeydown={(e) => e.key === 'Enter' && (e.preventDefault(), handleNewTag())}
 					/>
-					<button class="ghost-btn text-xs" onclick={handleNewTag}>+</button>
+					<button class="ghost-btn text-xs" onclick={handleNewTag}>Add</button>
 				</div>
 			</div>
 		{/if}

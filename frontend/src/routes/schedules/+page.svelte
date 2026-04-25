@@ -62,21 +62,32 @@
 	}
 </script>
 
-<div class="p-6">
-	<div class="mb-6 flex items-center gap-2">
-		<Clock size={16} strokeWidth={2} class="text-cs-text-muted" />
-		<h1 class="text-sm font-medium">Schedules</h1>
-		<div class="flex-1"></div>
-		<button class="ghost-btn flex items-center gap-1.5" onclick={() => (showCreate = !showCreate)}>
-			<Plus size={13} strokeWidth={2} /> New Schedule
+<div class="flex h-full flex-col">
+	<!-- ── Page header ────────────────────────────────────── -->
+	<div
+		class="flex flex-shrink-0 items-center justify-between border-b border-cs-border px-6 py-3"
+		style="background: var(--color-cs-surface);"
+	>
+		<div>
+			<h1 class="font-mono text-base font-semibold text-cs-text">Schedules</h1>
+			<p class="text-xs text-cs-text-muted">
+				{allSchedules.length} schedule{allSchedules.length !== 1 ? 's' : ''}
+			</p>
+		</div>
+		<button class="btn-primary flex items-center gap-1.5 text-xs" onclick={() => (showCreate = !showCreate)}>
+			<Plus size={13} strokeWidth={2.5} /> New Schedule
 		</button>
 	</div>
 
+	<!-- ── Create form ────────────────────────────────────── -->
 	{#if showCreate}
-		<div class="mb-6 rounded-lg border border-cs-border bg-cs-surface p-4">
+		<div
+			class="flex-shrink-0 border-b border-cs-border px-6 py-4"
+			style="background: var(--color-cs-surface);"
+		>
 			<div class="grid grid-cols-4 gap-3">
 				<div>
-					<label for="sched-script" class="mb-0.5 block text-xs text-cs-text-muted">Script</label>
+					<label for="sched-script" class="mb-1 block text-xs font-medium text-cs-text-muted">Script</label>
 					<select id="sched-script" class="input text-xs" bind:value={scriptId}>
 						<option value="">Select…</option>
 						{#each $scripts as s}
@@ -85,7 +96,7 @@
 					</select>
 				</div>
 				<div>
-					<label for="sched-trigger" class="mb-0.5 block text-xs text-cs-text-muted">Trigger</label>
+					<label for="sched-trigger" class="mb-1 block text-xs font-medium text-cs-text-muted">Trigger</label>
 					<select id="sched-trigger" class="input text-xs" bind:value={triggerType}>
 						<option value="cron">Cron</option>
 						<option value="interval">Interval</option>
@@ -94,7 +105,7 @@
 				</div>
 				{#if triggerType === 'cron'}
 					<div>
-						<label for="cron-min" class="mb-0.5 block text-xs text-cs-text-muted">Minute / Hour / DOW</label>
+						<label for="cron-min" class="mb-1 block text-xs font-medium text-cs-text-muted">Minute / Hour / DOW</label>
 						<div class="flex gap-1">
 							<input id="cron-min" class="input text-xs" bind:value={cronMinute} placeholder="0" />
 							<input id="cron-hour" class="input text-xs" bind:value={cronHour} placeholder="*" />
@@ -103,80 +114,107 @@
 					</div>
 				{:else if triggerType === 'interval'}
 					<div>
-						<label for="interval-min" class="mb-0.5 block text-xs text-cs-text-muted">Minutes</label>
+						<label for="interval-min" class="mb-1 block text-xs font-medium text-cs-text-muted">Minutes</label>
 						<input id="interval-min" class="input text-xs" type="number" bind:value={intervalMinutes} min="1" />
 					</div>
 				{:else}
 					<div>
-						<label for="run-date" class="mb-0.5 block text-xs text-cs-text-muted">Run Date</label>
+						<label for="run-date" class="mb-1 block text-xs font-medium text-cs-text-muted">Run Date</label>
 						<input id="run-date" class="input text-xs" bind:value={runDate} placeholder="2026-01-01 12:00:00" />
 					</div>
 				{/if}
-				<div class="flex items-end">
+				<div class="flex items-end gap-2">
 					<button class="btn-primary text-xs" onclick={createSchedule} disabled={creating}>
-						{creating ? 'Creating…' : 'Create'}
+						{creating ? 'Creating…' : 'Create Schedule'}
 					</button>
+					<button class="ghost-btn text-xs" onclick={() => (showCreate = false)}>Cancel</button>
 				</div>
 			</div>
 		</div>
 	{/if}
 
-	{#if loading}
-		<div class="space-y-3">
-			{#each Array(3) as _}
-				<div class="animate-pulse rounded-lg border border-cs-border bg-cs-surface p-4">
-					<div class="h-4 w-1/3 rounded bg-cs-surface-2"></div>
+	<!-- ── Inventory table ────────────────────────────────── -->
+	<div class="flex-1 overflow-auto">
+		{#if loading}
+			<div class="flex flex-col">
+				{#each Array(5) as _}
+					<div class="animate-pulse border-b border-cs-border px-6 py-4">
+						<div class="flex items-center gap-4">
+							<div class="h-2.5 w-2.5 rounded-full bg-cs-surface-2"></div>
+							<div class="h-3.5 w-40 rounded bg-cs-surface-2"></div>
+							<div class="h-3 w-24 rounded bg-cs-surface-2 ml-8"></div>
+							<div class="ml-auto h-3 w-20 rounded bg-cs-surface-2"></div>
+						</div>
+					</div>
+				{/each}
+			</div>
+		{:else if allSchedules.length === 0}
+			<div class="flex flex-col items-center justify-center py-20 text-center">
+				<Clock size={32} strokeWidth={1} class="mb-3 text-cs-text-muted opacity-40" />
+				<p class="mb-1 text-sm text-cs-text-muted">No schedules configured</p>
+				<button class="btn-primary mt-3 text-xs" onclick={() => (showCreate = true)}>
+					<Plus size={12} /> Create first schedule
+				</button>
+			</div>
+		{:else}
+			<!-- Column headers -->
+			<div
+				class="grid grid-cols-[2fr_1fr_2fr_1.5fr_1fr_auto] gap-4 border-b border-cs-border px-6 py-2 text-[11px] font-medium uppercase tracking-wider text-cs-text-muted"
+				style="background: var(--color-cs-surface);"
+			>
+				<span>Script</span>
+				<span>Trigger</span>
+				<span>Args</span>
+				<span>Next Run</span>
+				<span>Status</span>
+				<span class="text-right">Actions</span>
+			</div>
+
+			{#each allSchedules as sched (sched.id)}
+				{@const script = $scripts.find((s) => s.id === sched.script_id)}
+				<div
+					class="grid grid-cols-[2fr_1fr_2fr_1.5fr_1fr_auto] items-center gap-4 border-b border-cs-border px-6 py-3.5 text-sm transition-colors hover:bg-cs-surface-2"
+					style="min-height: 56px;"
+				>
+					<div class="min-w-0 flex items-center gap-2">
+						<span class="status-dot {sched.enabled ? 'status-dot--running' : 'status-dot--pending'}"></span>
+						<span class="truncate font-mono text-sm font-medium text-cs-text">{script?.name ?? '—'}</span>
+					</div>
+
+					<span class="badge w-fit">{sched.trigger_type}</span>
+
+					<span class="truncate font-mono text-xs text-cs-text-muted">
+						{Object.entries(sched.trigger_args ?? {}).map(([k,v]) => `${k}=${v}`).join(' ')}
+					</span>
+
+					<span class="text-xs text-cs-text-muted">
+						{sched.next_run_time
+							? new Date(sched.next_run_time).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+							: '—'}
+					</span>
+
+					<span class="text-xs {sched.enabled ? 'text-cs-success' : 'text-cs-text-muted'}">
+						{sched.enabled ? '● Active' : '⏸ Paused'}
+					</span>
+
+					<div class="flex items-center justify-end gap-1">
+						<button
+							class="ghost-btn p-1.5"
+							onclick={() => toggle(sched)}
+							title={sched.enabled ? 'Pause' : 'Resume'}
+						>
+							{#if sched.enabled}
+								<Pause size={13} strokeWidth={1.75} />
+							{:else}
+								<Play size={13} strokeWidth={1.75} />
+							{/if}
+						</button>
+						<button class="ghost-btn p-1.5 text-cs-error" onclick={() => remove(sched.id)} title="Delete">
+							<Trash2 size={13} strokeWidth={1.75} />
+						</button>
+					</div>
 				</div>
 			{/each}
-		</div>
-	{:else if allSchedules.length === 0}
-		<div class="rounded-lg border border-dashed border-cs-border p-8 text-center text-xs text-cs-text-muted">
-			No schedules configured
-		</div>
-	{:else}
-		<div class="overflow-hidden rounded-lg border border-cs-border">
-			<table class="w-full text-xs">
-				<thead class="bg-cs-surface-2">
-					<tr>
-						<th class="px-3 py-2 text-left font-medium text-cs-text-muted">Script</th>
-						<th class="px-3 py-2 text-left font-medium text-cs-text-muted">Trigger</th>
-						<th class="px-3 py-2 text-left font-medium text-cs-text-muted">Args</th>
-						<th class="px-3 py-2 text-left font-medium text-cs-text-muted">Next Run</th>
-						<th class="px-3 py-2 text-left font-medium text-cs-text-muted">Status</th>
-						<th class="px-3 py-2 text-right font-medium text-cs-text-muted">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each allSchedules as sched}
-						{@const script = $scripts.find((s) => s.id === sched.script_id)}
-						<tr class="border-t border-cs-border hover:bg-bg-hover">
-							<td class="px-3 py-2 font-mono">{script?.name ?? '—'}</td>
-							<td class="px-3 py-2"><span class="badge">{sched.trigger_type}</span></td>
-							<td class="px-3 py-2 font-mono text-cs-text-muted">{JSON.stringify(sched.trigger_args)}</td>
-							<td class="px-3 py-2 text-cs-text-muted">{sched.next_run_time ?? '—'}</td>
-							<td class="px-3 py-2">
-								{#if sched.enabled}
-									<span class="text-success">● Active</span>
-								{:else}
-									<span class="text-cs-text-muted">⏸ Paused</span>
-								{/if}
-							</td>
-							<td class="flex items-center justify-end gap-1 px-3 py-2">
-								<button class="ghost-btn p-1" onclick={() => toggle(sched)} title={sched.enabled ? 'Pause' : 'Resume'}>
-									{#if sched.enabled}
-										<Pause size={12} />
-									{:else}
-										<Play size={12} />
-									{/if}
-								</button>
-								<button class="ghost-btn p-1 text-cs-error" onclick={() => remove(sched.id)}>
-									<Trash2 size={12} />
-								</button>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
+		{/if}
+	</div>
 </div>
