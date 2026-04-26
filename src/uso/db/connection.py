@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS runs (
     status TEXT DEFAULT 'pending'
         CHECK (status IN ('pending','running','success','failure','timeout')),
     start_time TEXT, end_time TEXT, exit_code INTEGER, logs TEXT,
+    trigger TEXT DEFAULT 'manual',
     FOREIGN KEY (script_id) REFERENCES scripts(id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS artifacts (
@@ -151,8 +152,19 @@ def get_connection(db_path: Path | str | None = None) -> sqlite3.Connection:
     return _local.connections[key]
 
 
+_MIGRATIONS = [
+    "ALTER TABLE runs ADD COLUMN trigger TEXT DEFAULT 'manual'",
+]
+
+
 def init_db(db_path: Path | str | None = None) -> None:
-    """Initialize database schema."""
+    """Initialize database schema and run migrations."""
     conn = get_connection(db_path)
     conn.executescript(SCHEMA_SQL)
-    conn.commit()
+    # Best-effort column migrations (no-op if column already exists)
+    for sql in _MIGRATIONS:
+        try:
+            conn.execute(sql)
+            conn.commit()
+        except Exception:
+            pass

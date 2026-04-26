@@ -203,7 +203,7 @@ def execute_workflow(
             on_event({"type": "node_start", "node_id": node_id, "order": idx, "script_id": script_id})
 
         try:
-            run_result = run_service.execute_script(script_id, env=env, timeout=timeout)
+            run_result = run_service.execute_script(script_id, env=env, timeout=timeout, trigger="workflow")
             node_status = run_result.status
             db.update_node_run(nr_id, node_status, run_result.id)
 
