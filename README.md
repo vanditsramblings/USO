@@ -1,4 +1,6 @@
-# ![USO](frontend/static/favicon.svg) USO — Unified Script Orchestrator
+#  USO — Unified Script Orchestrator
+
+![USO](frontend/static/favicon.svg)
 
 > Centralized, secure, and observable script management across Python, Shell, and JavaScript runtimes.
 
