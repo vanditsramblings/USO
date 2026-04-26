@@ -15,13 +15,14 @@ def execute_script(
     env: dict[str, str] | None = None,
     timeout: int = 60,
     log_queue: queue.Queue | None = None,
+    trigger: str = "manual",
 ) -> RunOut:
     """Execute a script and record the run."""
     script = db.get_script(script_id)
     if not script:
         raise ValueError(f"Script not found: {script_id}")
 
-    run_id = db.create_run(script_id)
+    run_id = db.create_run(script_id, trigger=trigger)
     db.update_run(run_id, status="running")
 
     if log_queue:
@@ -62,13 +63,14 @@ def execute_script_async(
     env: dict[str, str] | None = None,
     timeout: int = 60,
     log_queue: queue.Queue | None = None,
+    trigger: str = "manual",
 ) -> tuple[str, threading.Thread]:
     """Start script execution in a background thread. Returns (run_id, thread)."""
     script = db.get_script(script_id)
     if not script:
         raise ValueError(f"Script not found: {script_id}")
 
-    run_id = db.create_run(script_id)
+    run_id = db.create_run(script_id, trigger=trigger)
     db.update_run(run_id, status="running")
 
     def _run():

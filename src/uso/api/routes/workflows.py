@@ -3,13 +3,16 @@
 import asyncio
 import json
 import threading
+from datetime import datetime
 
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 
+from uso.db.connection import get_connection
 from uso.models import (
     WorkflowCreate,
     WorkflowEdgeCreate,
     WorkflowEdgeOut,
+    WorkflowMetricsOut,
     WorkflowNodeCreate,
     WorkflowNodeOut,
     WorkflowNodeUpdate,
@@ -106,6 +109,50 @@ def execute_workflow(workflow_id: str, env: dict[str, str] | None = None, timeou
 @router.get("/{workflow_id}/runs", response_model=list[WorkflowRunOut])
 def list_runs(workflow_id: str):
     return workflow_service.list_workflow_runs(workflow_id)
+
+
+@router.get("/{workflow_id}/metrics", response_model=WorkflowMetricsOut)
+def get_workflow_metrics(workflow_id: str):
+    """Return aggregated execution metrics for a workflow."""
+    wf = workflow_service.get_workflow(workflow_id)
+    if not wf:
+        raise HTTPException(status_code=404, detail="Workflow not found")
+
+    conn = get_connection()
+    rows = conn.execute(
+        "SELECT id, status, started_at, finished_at FROM workflow_runs WHERE workflow_id = ?",
+        (workflow_id,),
+    ).fetchall()
+    runs = [dict(r) for r in rows]
+
+    total = len(runs)
+    success_count = sum(1 for r in runs if r["status"] == "success")
+    success_rate = success_count / total if total else 0.0
+
+    runs_by_status: dict[str, int] = {}
+    for r in runs:
+        runs_by_status[r["status"]] = runs_by_status.get(r["status"], 0) + 1
+
+    def _dur(s, e):
+        fmt = "%Y-%m-%d %H:%M:%S"
+        try:
+            return (datetime.strptime(e, fmt) - datetime.strptime(s, fmt)).total_seconds()
+        except Exception:
+            return None
+
+    dur_values = [
+        d for d in (_dur(r["started_at"], r["finished_at"]) for r in runs
+                    if r["started_at"] and r["finished_at"])
+        if d is not None
+    ]
+    avg_duration_s = sum(dur_values) / len(dur_values) if dur_values else None
+
+    return WorkflowMetricsOut(
+        total_runs=total,
+        success_rate=success_rate,
+        avg_duration_s=avg_duration_s,
+        runs_by_status=runs_by_status,
+    )
 
 
 @router.websocket("/{workflow_id}/ws")

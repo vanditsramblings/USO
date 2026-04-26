@@ -33,7 +33,7 @@ def _execute_scheduled(script_id: str) -> None:
     from uso.services import run_service
 
     try:
-        result = run_service.execute_script(script_id)
+        result = run_service.execute_script(script_id, trigger="scheduled")
         logger.info("Scheduled run %s for script %s: %s", result.id, script_id, result.status)
     except Exception:
         logger.exception("Scheduled execution failed for script %s", script_id)

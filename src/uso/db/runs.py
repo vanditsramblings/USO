@@ -3,13 +3,13 @@
 from .connection import _gen_id, get_connection
 
 
-def create_run(script_id: str) -> str:
+def create_run(script_id: str, trigger: str = "manual") -> str:
     conn = get_connection()
     run_id = _gen_id()
     conn.execute(
-        "INSERT INTO runs (id, script_id, status, start_time) "
-        "VALUES (?, ?, 'pending', datetime('now'))",
-        (run_id, script_id),
+        "INSERT INTO runs (id, script_id, status, start_time, trigger) "
+        "VALUES (?, ?, 'pending', datetime('now'), ?)",
+        (run_id, script_id, trigger),
     )
     conn.commit()
     return run_id

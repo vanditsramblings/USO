@@ -81,6 +81,32 @@ class RunOut(BaseModel):
     end_time: str | None
     exit_code: int | None
     logs: str | None
+    trigger: str = "manual"
+
+
+# --- Metrics ---
+
+
+class DurationPoint(BaseModel):
+    run_id: str
+    started_at: str | None
+    duration_s: float | None
+    status: str
+
+
+class ScriptMetricsOut(BaseModel):
+    total_runs: int
+    success_rate: float  # 0.0–1.0
+    avg_duration_s: float | None
+    runs_by_status: dict[str, int]
+    recent_durations: list[DurationPoint]  # last 20 finished runs
+
+
+class WorkflowMetricsOut(BaseModel):
+    total_runs: int
+    success_rate: float
+    avg_duration_s: float | None
+    runs_by_status: dict[str, int]
 
 
 # --- Artifact ---
