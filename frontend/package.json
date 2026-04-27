@@ -26,6 +26,9 @@
 		"typescript": "^6.0.2",
 		"vite": "^8.0.7"
 	},
+	"overrides": {
+		"cookie": "^0.7.0"
+	},
 	"dependencies": {
 		"@codemirror/commands": "^6.10.3",
 		"@codemirror/lang-javascript": "^6.2.5",
